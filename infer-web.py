@@ -338,7 +338,9 @@ def get_vc(sid):
     global n_spk, tgt_sr, net_g, vc, cpt
     if sid == "" or sid == []:
         global hubert_model
-        if hubert_model != None:  # 考虑到轮询, 需要加个判断看是否 sid 是由有模型切换到无模型的
+        if (
+            hubert_model != None
+        ):  # 考虑到轮询, 需要加个判断看是否 sid 是由有模型切换到无模型的
             print("clean_empty_cache")
             del net_g, n_spk, vc, hubert_model, tgt_sr  # ,cpt
             hubert_model = net_g = n_spk = vc = hubert_model = tgt_sr = None
@@ -368,7 +370,9 @@ def get_vc(sid):
     else:
         net_g = SynthesizerTrnMs256NSFsid_nono(*cpt["config"])
     del net_g.enc_q
-    print(net_g.load_state_dict(cpt["weight"], strict=False))  # 不加这一行清不干净, 真奇葩
+    print(
+        net_g.load_state_dict(cpt["weight"], strict=False)
+    )  # 不加这一行清不干净, 真奇葩
     net_g.eval().to(config.device)
     if config.is_half:
         net_g = net_g.half()
@@ -734,7 +738,9 @@ def train_index(exp_dir1):
         index,
         "%s/added_IVF%s_Flat_nprobe_%s.index" % (exp_dir, n_ivf, index_ivf.nprobe),
     )
-    infos.append("成功构建索引，added_IVF%s_Flat_nprobe_%s.index" % (n_ivf, index_ivf.nprobe))
+    infos.append(
+        "成功构建索引，added_IVF%s_Flat_nprobe_%s.index" % (n_ivf, index_ivf.nprobe)
+    )
     # faiss.write_index(index, '%s/added_IVF%s_Flat_FastScan.index'%(exp_dir,n_ivf))
     # infos.append("成功构建索引，added_IVF%s_Flat_FastScan.index"%(n_ivf))
     yield "\n".join(infos)
@@ -921,7 +927,9 @@ def train1key(
     yield get_info_str(cmd)
     p = Popen(cmd, shell=True, cwd=now_dir)
     p.wait()
-    yield get_info_str(i18n("训练结束, 您可查看控制台训练日志或实验文件夹下的train.log"))
+    yield get_info_str(
+        i18n("训练结束, 您可查看控制台训练日志或实验文件夹下的train.log")
+    )
     #######step3b:训练索引
     npys = []
     listdir_res = list(os.listdir(feature256_dir))
@@ -1076,7 +1084,9 @@ with gr.Blocks() as app:
         with gr.TabItem(i18n("模型推理")):
             with gr.Row():
                 sid0 = gr.Dropdown(label=i18n("推理音色"), choices=sorted(names))
-                refresh_button = gr.Button(i18n("刷新音色列表和索引路径"), variant="primary")
+                refresh_button = gr.Button(
+                    i18n("刷新音色列表和索引路径"), variant="primary"
+                )
                 clean_button = gr.Button(i18n("卸载音色省显存"), variant="primary")
                 spk_item = gr.Slider(
                     minimum=0,
@@ -1095,19 +1105,24 @@ with gr.Blocks() as app:
                 )
             with gr.Group():
                 gr.Markdown(
-                    value=i18n("男转女推荐+12key, 女转男推荐-12key, 如果音域爆炸导致音色失真也可以自己调整到合适音域. ")
+                    value=i18n(
+                        "男转女推荐+12key, 女转男推荐-12key, 如果音域爆炸导致音色失真也可以自己调整到合适音域. "
+                    )
                 )
                 with gr.Row():
                     with gr.Column():
                         vc_transform0 = gr.Number(
-                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"), value=0
+                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"),
+                            value=0,
                         )
                         input_audio0 = gr.Textbox(
                             label=i18n("输入待处理音频文件路径(默认是正确格式示例)"),
                             value="E:\\codes\\py39\\test-20230416b\\todo-songs\\冬之花clip1.wav",
                         )
                         f0method0 = gr.Radio(
-                            label=i18n("选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"),
+                            label=i18n(
+                                "选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"
+                            ),
                             choices=["pm", "harvest"],
                             value="pm",
                             interactive=True,
@@ -1115,7 +1130,9 @@ with gr.Blocks() as app:
                         filter_radius0 = gr.Slider(
                             minimum=0,
                             maximum=7,
-                            label=i18n(">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"),
+                            label=i18n(
+                                ">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"
+                            ),
                             value=3,
                             step=1,
                             interactive=True,
@@ -1154,11 +1171,15 @@ with gr.Blocks() as app:
                             step=1,
                             interactive=True,
                         )
-                    f0_file = gr.File(label=i18n("F0曲线文件, 可选, 一行一个音高, 代替默认F0及升降调"))
+                    f0_file = gr.File(
+                        label=i18n("F0曲线文件, 可选, 一行一个音高, 代替默认F0及升降调")
+                    )
                     but0 = gr.Button(i18n("转换"), variant="primary")
                     with gr.Column():
                         vc_output1 = gr.Textbox(label=i18n("输出信息"))
-                        vc_output2 = gr.Audio(label=i18n("输出音频(右下角三个点,点了可以下载)"))
+                        vc_output2 = gr.Audio(
+                            label=i18n("输出音频(右下角三个点,点了可以下载)")
+                        )
                     but0.click(
                         vc_single,
                         [
@@ -1178,16 +1199,23 @@ with gr.Blocks() as app:
                     )
             with gr.Group():
                 gr.Markdown(
-                    value=i18n("批量转换, 输入待转换音频文件夹, 或上传多个音频文件, 在指定文件夹(默认opt)下输出转换的音频. ")
+                    value=i18n(
+                        "批量转换, 输入待转换音频文件夹, 或上传多个音频文件, 在指定文件夹(默认opt)下输出转换的音频. "
+                    )
                 )
                 with gr.Row():
                     with gr.Column():
                         vc_transform1 = gr.Number(
-                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"), value=0
+                            label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"),
+                            value=0,
                         )
-                        opt_input = gr.Textbox(label=i18n("指定输出文件夹"), value="opt")
+                        opt_input = gr.Textbox(
+                            label=i18n("指定输出文件夹"), value="opt"
+                        )
                         f0method1 = gr.Radio(
-                            label=i18n("选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"),
+                            label=i18n(
+                                "选择音高提取算法,输入歌声可用pm提速,harvest低音好但巨慢无比"
+                            ),
                             choices=["pm", "harvest"],
                             value="pm",
                             interactive=True,
@@ -1195,7 +1223,9 @@ with gr.Blocks() as app:
                         filter_radius1 = gr.Slider(
                             minimum=0,
                             maximum=7,
-                            label=i18n(">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"),
+                            label=i18n(
+                                ">=3则使用对harvest音高识别的结果使用中值滤波，数值为滤波半径，使用可以削弱哑音"
+                            ),
                             value=3,
                             step=1,
                             interactive=True,
@@ -1233,11 +1263,14 @@ with gr.Blocks() as app:
                         )
                     with gr.Column():
                         dir_input = gr.Textbox(
-                            label=i18n("输入待处理音频文件夹路径(去文件管理器地址栏拷就行了)"),
+                            label=i18n(
+                                "输入待处理音频文件夹路径(去文件管理器地址栏拷就行了)"
+                            ),
                             value="E:\codes\py39\\test-20230416b\\todo-songs",
                         )
                         inputs = gr.File(
-                            file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
+                            file_count="multiple",
+                            label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹"),
                         )
                     but1 = gr.Button(i18n("转换"), variant="primary")
                     vc_output3 = gr.Textbox(label=i18n("输出信息"))
@@ -1273,10 +1306,13 @@ with gr.Blocks() as app:
                             value="E:\\codes\\py39\\test-20230416b\\todo-songs\\todo-songs",
                         )
                         wav_inputs = gr.File(
-                            file_count="multiple", label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹")
+                            file_count="multiple",
+                            label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹"),
                         )
                     with gr.Column():
-                        model_choose = gr.Dropdown(label=i18n("模型"), choices=uvr5_names)
+                        model_choose = gr.Dropdown(
+                            label=i18n("模型"), choices=uvr5_names
+                        )
                         agg = gr.Slider(
                             minimum=0,
                             maximum=20,
@@ -1289,7 +1325,9 @@ with gr.Blocks() as app:
                         opt_vocal_root = gr.Textbox(
                             label=i18n("指定输出人声文件夹"), value="opt"
                         )
-                        opt_ins_root = gr.Textbox(label=i18n("指定输出乐器文件夹"), value="opt")
+                        opt_ins_root = gr.Textbox(
+                            label=i18n("指定输出乐器文件夹"), value="opt"
+                        )
                     but2 = gr.Button(i18n("转换"), variant="primary")
                     vc_output4 = gr.Textbox(label=i18n("输出信息"))
                     but2.click(
@@ -1340,7 +1378,8 @@ with gr.Blocks() as app:
                 )
                 with gr.Row():
                     trainset_dir4 = gr.Textbox(
-                        label=i18n("输入训练文件夹路径"), value="E:\\语音音频+标注\\米津玄师\\src"
+                        label=i18n("输入训练文件夹路径"),
+                        value="E:\\语音音频+标注\\米津玄师\\src",
                     )
                     spk_id5 = gr.Slider(
                         minimum=0,
@@ -1356,11 +1395,17 @@ with gr.Blocks() as app:
                         preprocess_dataset, [trainset_dir4, exp_dir1, sr2, np7], [info1]
                     )
             with gr.Group():
-                gr.Markdown(value=i18n("step2b: 使用CPU提取音高(如果模型带音高), 使用GPU提取特征(选择卡号)"))
+                gr.Markdown(
+                    value=i18n(
+                        "step2b: 使用CPU提取音高(如果模型带音高), 使用GPU提取特征(选择卡号)"
+                    )
+                )
                 with gr.Row():
                     with gr.Column():
                         gpus6 = gr.Textbox(
-                            label=i18n("以-分隔输入使用的卡号, 例如   0-1-2   使用卡0和卡1和卡2"),
+                            label=i18n(
+                                "以-分隔输入使用的卡号, 例如   0-1-2   使用卡0和卡1和卡2"
+                            ),
                             value=gpus,
                             interactive=True,
                         )
@@ -1442,7 +1487,9 @@ with gr.Blocks() as app:
                         [np7, f0method8, pretrained_G14, pretrained_D15],
                     )
                     gpus16 = gr.Textbox(
-                        label=i18n("以-分隔输入使用的卡号, 例如   0-1-2   使用卡0和卡1和卡2"),
+                        label=i18n(
+                            "以-分隔输入使用的卡号, 例如   0-1-2   使用卡0和卡1和卡2"
+                        ),
                         value=gpus,
                         interactive=True,
                     )
@@ -1495,8 +1542,12 @@ with gr.Blocks() as app:
             with gr.Group():
                 gr.Markdown(value=i18n("模型融合, 可用于测试音色融合"))
                 with gr.Row():
-                    ckpt_a = gr.Textbox(label=i18n("A模型路径"), value="", interactive=True)
-                    ckpt_b = gr.Textbox(label=i18n("B模型路径"), value="", interactive=True)
+                    ckpt_a = gr.Textbox(
+                        label=i18n("A模型路径"), value="", interactive=True
+                    )
+                    ckpt_b = gr.Textbox(
+                        label=i18n("B模型路径"), value="", interactive=True
+                    )
                     alpha_a = gr.Slider(
                         minimum=0,
                         maximum=1,
@@ -1518,7 +1569,10 @@ with gr.Blocks() as app:
                         interactive=True,
                     )
                     info__ = gr.Textbox(
-                        label=i18n("要置入的模型信息"), value="", max_lines=8, interactive=True
+                        label=i18n("要置入的模型信息"),
+                        value="",
+                        max_lines=8,
+                        interactive=True,
                     )
                     name_to_save0 = gr.Textbox(
                         label=i18n("保存的模型名不带后缀"),
@@ -1535,13 +1589,18 @@ with gr.Blocks() as app:
                     info4,
                 )  # def merge(path1,path2,alpha1,sr,f0,info):
             with gr.Group():
-                gr.Markdown(value=i18n("修改模型信息(仅支持weights文件夹下提取的小模型文件)"))
+                gr.Markdown(
+                    value=i18n("修改模型信息(仅支持weights文件夹下提取的小模型文件)")
+                )
                 with gr.Row():
                     ckpt_path0 = gr.Textbox(
                         label=i18n("模型路径"), value="", interactive=True
                     )
                     info_ = gr.Textbox(
-                        label=i18n("要改的模型信息"), value="", max_lines=8, interactive=True
+                        label=i18n("要改的模型信息"),
+                        value="",
+                        max_lines=8,
+                        interactive=True,
                     )
                     name_to_save1 = gr.Textbox(
                         label=i18n("保存的文件名, 默认空为和源文件同名"),
@@ -1554,7 +1613,9 @@ with gr.Blocks() as app:
                     info5 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
                 but7.click(change_info, [ckpt_path0, info_, name_to_save1], info5)
             with gr.Group():
-                gr.Markdown(value=i18n("查看模型信息(仅支持weights文件夹下提取的小模型文件)"))
+                gr.Markdown(
+                    value=i18n("查看模型信息(仅支持weights文件夹下提取的小模型文件)")
+                )
                 with gr.Row():
                     ckpt_path1 = gr.Textbox(
                         label=i18n("模型路径"), value="", interactive=True
@@ -1590,7 +1651,10 @@ with gr.Blocks() as app:
                         interactive=True,
                     )
                     info___ = gr.Textbox(
-                        label=i18n("要置入的模型信息"), value="", max_lines=8, interactive=True
+                        label=i18n("要置入的模型信息"),
+                        value="",
+                        max_lines=8,
+                        interactive=True,
                     )
                     but9 = gr.Button(i18n("提取"), variant="primary")
                     info7 = gr.Textbox(label=i18n("输出信息"), value="", max_lines=8)
@@ -1603,7 +1667,9 @@ with gr.Blocks() as app:
 
         with gr.TabItem(i18n("Onnx导出")):
             with gr.Row():
-                ckpt_dir = gr.Textbox(label=i18n("RVC模型路径"), value="", interactive=True)
+                ckpt_dir = gr.Textbox(
+                    label=i18n("RVC模型路径"), value="", interactive=True
+                )
             with gr.Row():
                 onnx_dir = gr.Textbox(
                     label=i18n("Onnx输出路径"), value="", interactive=True
